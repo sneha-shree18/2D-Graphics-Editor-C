@@ -63,6 +63,35 @@ void drawLine(int x1, int y1, int x2, int y2)
     }
 }
 
+void drawRectangle(int r1, int c1, int r2, int c2)
+{
+    // Draw horizontal boundaries
+    for (int c = c1; c <= c2; c++)
+    {
+        if (r1 >= 0 && r1 < ROWS && c >= 0 && c < COLS)
+        {
+            canvas[r1][c] = '*';
+        }
+        if (r2 >= 0 && r2 < ROWS && c >= 0 && c < COLS)
+        {
+            canvas[r2][c] = '*';
+        }
+    }
+
+    // Draw vertical boundaries
+    for (int r = r1; r <= r2; r++)
+    {
+        if (r >= 0 && r < ROWS && c1 >= 0 && c1 < COLS)
+        {
+            canvas[r][c1] = '*';
+        }
+        if (r >= 0 && r < ROWS && c2 >= 0 && c2 < COLS)
+        {
+            canvas[r][c2] = '*';
+        }
+    }
+}
+
 int main()
 {
     initializeCanvas();
@@ -73,7 +102,8 @@ int main()
         printf("\nMenu:\n");
         printf("1 Display Canvas\n");
         printf("2 Draw Line\n");
-        printf("3 Exit\n");
+        printf("3 Draw Rectangle\n");
+        printf("4 Exit\n");
         printf("Enter choice: ");
         
         if (scanf("%d", &choice) != 1)
@@ -112,13 +142,41 @@ int main()
                 }
                 break;
             case 3:
+                {
+                    int r1, c1, r2, c2;
+                    printf("Enter top-left coordinates (row col): ");
+                    if (scanf("%d %d", &r1, &c1) != 2)
+                    {
+                        while (getchar() != '\n');
+                        printf("Invalid coordinates.\n");
+                        break;
+                    }
+                    printf("Enter bottom-right coordinates (row col): ");
+                    if (scanf("%d %d", &r2, &c2) != 2)
+                    {
+                        while (getchar() != '\n');
+                        printf("Invalid coordinates.\n");
+                        break;
+                    }
+                    if (r1 < 0 || r1 >= ROWS || c1 < 0 || c1 >= COLS ||
+                        r2 < 0 || r2 >= ROWS || c2 < 0 || c2 >= COLS ||
+                        r1 > r2 || c1 > c2)
+                    {
+                        printf("Invalid coordinates.\n");
+                        break;
+                    }
+                    drawRectangle(r1, c1, r2, c2);
+                    printf("Rectangle drawn.\n");
+                }
+                break;
+            case 4:
                 printf("Exiting...\n");
                 break;
             default:
                 printf("Invalid choice. Please try again.\n");
                 break;
         }
-    } while (choice != 3);
+    } while (choice != 4);
 
     return 0;
 }

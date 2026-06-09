@@ -92,6 +92,31 @@ void drawRectangle(int r1, int c1, int r2, int c2)
     }
 }
 
+void drawTriangle(int r, int c, int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        // Left vertical leg
+        if (r + i >= 0 && r + i < ROWS && c >= 0 && c < COLS)
+        {
+            canvas[r + i][c] = '*';
+        }
+        // Hypotenuse
+        if (r + i >= 0 && r + i < ROWS && c + i >= 0 && c + i < COLS)
+        {
+            canvas[r + i][c + i] = '*';
+        }
+    }
+    // Bottom horizontal leg
+    for (int j = 0; j < size; j++)
+    {
+        if (r + size - 1 >= 0 && r + size - 1 < ROWS && c + j >= 0 && c + j < COLS)
+        {
+            canvas[r + size - 1][c + j] = '*';
+        }
+    }
+}
+
 int main()
 {
     initializeCanvas();
@@ -103,7 +128,8 @@ int main()
         printf("1 Display Canvas\n");
         printf("2 Draw Line\n");
         printf("3 Draw Rectangle\n");
-        printf("4 Exit\n");
+        printf("4 Draw Triangle\n");
+        printf("5 Exit\n");
         printf("Enter choice: ");
         
         if (scanf("%d", &choice) != 1)
@@ -170,13 +196,40 @@ int main()
                 }
                 break;
             case 4:
+                {
+                    int r, c, size;
+                    printf("Enter starting coordinates (row col): ");
+                    if (scanf("%d %d", &r, &c) != 2)
+                    {
+                        while (getchar() != '\n');
+                        printf("Invalid coordinates.\n");
+                        break;
+                    }
+                    printf("Enter size: ");
+                    if (scanf("%d", &size) != 1)
+                    {
+                        while (getchar() != '\n');
+                        printf("Invalid input. Please enter a number.\n");
+                        break;
+                    }
+                    if (r < 0 || r >= ROWS || c < 0 || c >= COLS ||
+                        size <= 0 || r + size > ROWS || c + size > COLS)
+                    {
+                        printf("Invalid coordinates.\n");
+                        break;
+                    }
+                    drawTriangle(r, c, size);
+                    printf("Triangle drawn.\n");
+                }
+                break;
+            case 5:
                 printf("Exiting...\n");
                 break;
             default:
                 printf("Invalid choice. Please try again.\n");
                 break;
         }
-    } while (choice != 4);
+    } while (choice != 5);
 
     return 0;
 }

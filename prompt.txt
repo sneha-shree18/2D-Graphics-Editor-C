@@ -1,0 +1,205 @@
+================================================================================
+             PROMPT DOCUMENTATION - C MINI PROJECT
+             Project: Menu-Driven 2D Graphics Editor (Character Array)
+================================================================================
+
+--------------------------------------------------------------------------------
+    This document records the AI prompts used during development and a brief
+      summary of the responses received for each feature of the project.
+--------------------------------------------------------------------------------
+
+
+================================================================================
+1. CANVAS INITIALIZATION AND DISPLAY
+================================================================================
+
+PROMPT USED:
+------------
+"Write a C program that creates a 2D graphics canvas using a 2D character array
+of size 25 rows x 80 columns. Initialize the canvas with blank spaces, display
+a border around it using '#' characters, and print the canvas row by row to the
+terminal. Include a function to clear/reset the canvas."
+
+RESPONSE SUMMARY:
+-----------------
+- A 2D character array `canvas[ROWS][COLS]` is declared globally with defined
+  constants for ROWS (25) and COLS (80).
+- An `initCanvas()` function fills every cell with a space character (' ') to
+  reset the drawing area.
+- A `displayCanvas()` function iterates through all rows and columns, printing
+  each character. The top and bottom borders are printed with '#' or '-'
+  characters, and side borders use '|'.
+- A `clearCanvas()` function calls `initCanvas()` to reset all cells back to
+  spaces, effectively erasing all drawings.
+- `system("cls")` (Windows) or `system("clear")` (Linux) is used before
+  printing to refresh the terminal view cleanly.
+
+
+================================================================================
+2. MENU-DRIVEN INTERFACE
+================================================================================
+
+PROMPT USED:
+------------
+"Write a menu-driven interface in C for a 2D graphics editor. The menu should
+display the following options:
+  1. Draw Line
+  2. Draw Rectangle
+  3. Draw Triangle
+  4. Draw Circle
+  5. Delete Object (Clear Canvas)
+  6. Exit
+Use a do-while loop and switch-case to handle user input. After each operation,
+redisplay the canvas and return to the menu."
+
+RESPONSE SUMMARY:
+-----------------
+- A `showMenu()` function prints all available options clearly formatted on
+  the terminal.
+- A `do-while` loop keeps the program running until the user selects 'Exit'.
+- A `switch-case` statement maps each menu choice to the corresponding drawing
+  function (e.g., case 1 calls `drawLine()`).
+- After each drawing operation, `displayCanvas()` is called to show the updated
+  canvas before re-showing the menu.
+- Invalid inputs are handled with a `default` case that prints an error message
+  and prompts the user again.
+- Input is read using `scanf()` and the input buffer is flushed to avoid issues
+  with leftover newline characters.
+
+
+================================================================================
+3. DRAW LINE
+================================================================================
+
+PROMPT USED:
+------------
+"Write a C function to draw a straight line on a 2D character array canvas.
+The function should accept starting coordinates (x1, y1) and ending coordinates
+(x2, y2) from the user. Use Bresenham's Line Drawing Algorithm to plot the line
+using '*' characters on the canvas. Handle both horizontal and vertical lines
+as special cases."
+
+RESPONSE SUMMARY:
+-----------------
+- The `drawLine(int x1, int y1, int x2, int y2)` function is implemented using
+  Bresenham's Line Drawing Algorithm for accuracy on a character grid.
+- Horizontal lines (same y) are drawn by iterating across the x-axis range and
+  placing '*' at each column.
+- Vertical lines (same x) are drawn by iterating down the y-axis and placing
+  '*' at each row.
+- For diagonal/general lines, the algorithm calculates dx, dy, and step
+  increments, placing '*' at each computed (x, y) position.
+- Boundary checks ensure that coordinates outside the canvas dimensions are
+  clamped or rejected with an error message.
+- The function modifies `canvas[y][x] = '*'` at each plotted point.
+
+
+================================================================================
+4. DRAW RECTANGLE
+================================================================================
+
+PROMPT USED:
+------------
+"Write a C function to draw a rectangle outline on a 2D character array canvas.
+The function should take the top-left corner coordinates (x, y), a width, and
+a height as input from the user. Use '*' for the border characters. Ensure the
+rectangle stays within the canvas bounds."
+
+RESPONSE SUMMARY:
+-----------------
+- The `drawRectangle(int x, int y, int width, int height)` function draws only
+  the outline (not filled) of a rectangle.
+- The top and bottom horizontal edges are drawn by looping from x to x+width
+  and placing '*' at the fixed y and y+height rows respectively.
+- The left and right vertical edges are drawn by looping from y to y+height
+  and placing '*' at the fixed x and x+width columns respectively.
+- Bounds checking is applied so that if (x+width) or (y+height) exceeds canvas
+  dimensions, the user is prompted to re-enter valid values.
+- Corner cells are naturally covered when both the horizontal and vertical edge
+  loops execute, requiring no special handling.
+
+
+================================================================================
+5. DRAW TRIANGLE
+================================================================================
+
+PROMPT USED:
+------------
+"Write a C function to draw a right-angled triangle on a 2D character array
+canvas. Accept the apex (top-left) coordinates (x, y) and the height from the
+user. Draw the triangle outline using '*' characters -- a vertical left side,
+a horizontal base at the bottom, and a hypotenuse connecting them."
+
+RESPONSE SUMMARY:
+-----------------
+- The `drawTriangle(int x, int y, int height)` function draws a right-angled
+  triangle with the right angle at the bottom-left.
+- The left vertical side is drawn from row y to y+height at column x.
+- The bottom horizontal base is drawn from column x to x+height at row y+height
+  (since the base width equals the height for a right-angled triangle).
+- The hypotenuse is drawn diagonally from (x, y) to (x+height, y+height) by
+  incrementing both row and column simultaneously.
+- Boundary conditions are validated before drawing begins.
+- The '*' character is used for all three sides, and corners are shared between
+  adjacent sides naturally.
+
+
+================================================================================
+6. DRAW CIRCLE
+================================================================================
+
+PROMPT USED:
+------------
+"Write a C function to draw a circle outline on a 2D character array canvas
+using the Midpoint Circle Drawing Algorithm. Accept the center coordinates
+(cx, cy) and the radius from the user. Plot points using 'O' or '*' characters.
+Since the terminal has non-square characters (tall and narrow), apply a scaling
+factor to the x-axis to make the circle look more round."
+
+RESPONSE SUMMARY:
+-----------------
+- The `drawCircle(int cx, int cy, int radius)` function uses the Midpoint
+  Circle Drawing Algorithm (also known as Bresenham's Circle Algorithm).
+- The algorithm starts at (0, radius) and iterates using a decision parameter
+  `p = 1 - radius`, adjusting the x and y values at each step.
+- All 8 symmetric octants of the circle are plotted simultaneously using a
+  helper `plotCirclePoints(cx, cy, x, y)` function that places '*' at all
+  8 reflected positions.
+- A horizontal scaling factor (typically 2.0) is applied to the x-coordinates
+  before mapping to the canvas to compensate for the non-square aspect ratio
+  of terminal characters, producing a visually rounder circle.
+- Boundary checks prevent writing outside the canvas array bounds.
+- For very large radii that exceed canvas bounds, the function alerts the user.
+
+
+================================================================================
+7. DELETE OBJECT (CLEAR CANVAS)
+================================================================================
+
+PROMPT USED:
+------------
+"Write a C function to delete objects from the 2D character array canvas.
+Provide two options: (a) Clear the entire canvas, resetting all cells to
+spaces; and (b) Erase a specific rectangular region by taking top-left
+coordinates, width, and height from the user and filling that region with
+spaces. Display a confirmation message after the operation."
+
+RESPONSE SUMMARY:
+-----------------
+- The `deleteObject()` function presents a sub-menu with two choices:
+    Option 1 -- Clear Entire Canvas
+    Option 2 -- Erase Rectangular Region
+- For Option 1, `initCanvas()` is called to reset every cell in the 2D array
+  to a space (' '), effectively clearing all drawings.
+- For Option 2, the user inputs the top-left corner (x, y), width, and height
+  of the region to erase. A nested for-loop iterates over the specified rows
+  and columns and sets each cell to ' '.
+- Bounds checking ensures the erase region does not exceed the canvas size.
+- After either operation, a confirmation message such as "Canvas cleared." or
+  "Region erased successfully." is printed before returning to the main menu.
+- `displayCanvas()` is called after deletion to show the updated canvas state.
+
+
+================================================================================
+                            END OF PROMPT DOCUMENTATION
+================================================================================

@@ -117,6 +117,81 @@ void drawTriangle(int r, int c, int size)
     }
 }
 
+void drawCirclePoints(int xc, int yc, int x, int y)
+{
+    int points[8][2] = {
+        {xc + x, yc + y},
+        {xc - x, yc + y},
+        {xc + x, yc - y},
+        {xc - x, yc - y},
+        {xc + y, yc + x},
+        {xc - y, yc + x},
+        {xc + y, yc - x},
+        {xc - y, yc - x}
+    };
+    for (int i = 0; i < 8; i++)
+    {
+        int col = points[i][0];
+        int row = points[i][1];
+        if (row >= 0 && row < ROWS && col >= 0 && col < COLS)
+        {
+            canvas[row][col] = '*';
+        }
+    }
+}
+
+void drawCircle(int row_center, int col_center, int radius)
+{
+    int x = 0;
+    int y = radius;
+    int d = 3 - 2 * radius;
+
+    drawCirclePoints(col_center, row_center, x, y);
+
+    while (y >= x)
+    {
+        x++;
+        if (d > 0)
+        {
+            y--;
+            d = d + 4 * (x - y) + 10;
+        }
+        else
+        {
+            d = d + 4 * x + 6;
+        }
+        drawCirclePoints(col_center, row_center, x, y);
+    }
+}
+
+void deleteObject(int r1, int c1, int r2, int c2)
+{
+    // Validate that coordinates are within canvas bounds and form a valid region
+    if (r1 < 0 || r1 >= ROWS || c1 < 0 || c1 >= COLS ||
+        r2 < 0 || r2 >= ROWS || c2 < 0 || c2 >= COLS ||
+        r1 > r2 || c1 > c2)
+    {
+        printf("Invalid coordinates. Please ensure:\n");
+        printf("  - Rows are in range [0, %d]\n", ROWS - 1);
+        printf("  - Columns are in range [0, %d]\n", COLS - 1);
+        printf("  - Top-left row <= Bottom-right row\n");
+        printf("  - Top-left col <= Bottom-right col\n");
+        return;
+    }
+
+    // Replace all characters in the selected rectangular area with '_'
+    for (int r = r1; r <= r2; r++)
+    {
+        for (int c = c1; c <= c2; c++)
+        {
+            canvas[r][c] = '_';
+        }
+    }
+
+    printf("Object deleted successfully. Area [(%d,%d) to (%d,%d)] cleared.\n",
+           r1, c1, r2, c2);
+}
+
 int main()
 {
     initializeCanvas();
@@ -129,7 +204,9 @@ int main()
         printf("2 Draw Line\n");
         printf("3 Draw Rectangle\n");
         printf("4 Draw Triangle\n");
-        printf("5 Exit\n");
+        printf("5 Draw Circle\n");
+        printf("6 Delete Object\n");
+        printf("7 Exit\n");
         printf("Enter choice: ");
         
         if (scanf("%d", &choice) != 1)
@@ -223,13 +300,61 @@ int main()
                 }
                 break;
             case 5:
+                {
+                    int r, c, radius;
+                    printf("Enter center coordinates (row col): ");
+                    if (scanf("%d %d", &r, &c) != 2)
+                    {
+                        while (getchar() != '\n');
+                        printf("Invalid coordinates.\n");
+                        break;
+                    }
+                    printf("Enter radius: ");
+                    if (scanf("%d", &radius) != 1)
+                    {
+                        while (getchar() != '\n');
+                        printf("Invalid input. Please enter a number.\n");
+                        break;
+                    }
+                    if (r - radius < 0 || r + radius >= ROWS ||
+                        c - radius < 0 || c + radius >= COLS ||
+                        radius <= 0)
+                    {
+                        printf("Invalid coordinates.\n");
+                        break;
+                    }
+                    drawCircle(r, c, radius);
+                    printf("Circle drawn.\n");
+                }
+                break;
+            case 6:
+                {
+                    int r1, c1, r2, c2;
+                    printf("Enter top-left coordinates (row col): ");
+                    if (scanf("%d %d", &r1, &c1) != 2)
+                    {
+                        while (getchar() != '\n');
+                        printf("Invalid coordinates.\n");
+                        break;
+                    }
+                    printf("Enter bottom-right coordinates (row col): ");
+                    if (scanf("%d %d", &r2, &c2) != 2)
+                    {
+                        while (getchar() != '\n');
+                        printf("Invalid coordinates.\n");
+                        break;
+                    }
+                    deleteObject(r1, c1, r2, c2);
+                }
+                break;
+            case 7:
                 printf("Exiting...\n");
                 break;
             default:
                 printf("Invalid choice. Please try again.\n");
                 break;
         }
-    } while (choice != 5);
+    } while (choice != 7);
 
     return 0;
 }
